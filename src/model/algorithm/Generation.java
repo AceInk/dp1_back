@@ -30,20 +30,22 @@ public class Generation {
     @Builder.Default
     private double best_fitness = Double.MAX_VALUE;
     @Builder.Default
-    private double ratio_cross = 0.8;
+    private double ratio_cross = 0.6;
     @Builder.Default
     private double prob_mutate = 0.7;
     private int n_parents;
     private int n_directs;
 
-    public void initPopulation(Chromosome chromosome , int population_size){
+    public void initPopulation(Chromosome chromosome, List<Vertex> depots, int population_size){
         generation_number=0;
+        Random r = new Random();
         for(int i = 0; i < population_size; i++){
             Chromosome newChromosome = new Chromosome();
             List<Vertex> shuffleGenes = new ArrayList<>(chromosome.getGenes());
             shuffleGenes = ListUtils.shuffle(shuffleGenes);
             newChromosome.setCurrentStart(chromosome.getCurrentStart());
             newChromosome.setGenes(shuffleGenes);
+            newChromosome.setFinalDepot(depots.get(r.nextInt(depots.size())));
             chromosomesList.add(newChromosome);
         }
     }
@@ -135,6 +137,7 @@ public class Generation {
                         .fitness(c.getFitness())
                         .currentStart(c.getCurrentStart())
                         .genes(c.getGenes())
+                        .finalDepot(c.getFinalDepot())
                         .build();
             }
         }

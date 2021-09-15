@@ -83,6 +83,11 @@ public class Agente_Viajero extends JFrame implements Runnable{
         });
         
         bestChromosome = null;
+        
+        this.setPreferredSize(new Dimension(630,550));
+        this.pack();
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
     }
     
     private Chromosome getAdan(){
@@ -109,7 +114,7 @@ public class Agente_Viajero extends JFrame implements Runnable{
         changePrincipalDepot(chromosome);
         
         Generation generation = new Generation();
-        generation.initPopulation(chromosome, 20);
+        generation.initPopulation(chromosome, mapa.getDepots(), 60);
         generation.setN_parents(4);
         generation.setN_directs(4);
         generation.setBest_chromosome(chromosome);
@@ -126,11 +131,10 @@ public class Agente_Viajero extends JFrame implements Runnable{
         ArrayList<Vertex> caminoSleccionado = new ArrayList<>();
         
         // aqui se implementa el algoritmo genetico con 200 generaciones
-        while(i < 200){
+        while(i < 500){
             try {
                 generation.generateNewGeneration(25);
                 generation.calculateAllFitness();
-//                mostrar(cad);
                 Thread.sleep(10);
                 if (generation.getBest_fitness() < menor){
                     bestChromosome = generation.getBest_chromosome();
@@ -138,6 +142,7 @@ public class Agente_Viajero extends JFrame implements Runnable{
                     caminoSleccionado.clear();
                     caminoSleccionado.add(bestChromosome.getCurrentStart());
                     caminoSleccionado.addAll(bestChromosome.getGenes());
+                    caminoSleccionado.add(bestChromosome.getFinalDepot());
                     mostrar(caminoSleccionado);
                 }
                 i++;
@@ -153,6 +158,7 @@ public class Agente_Viajero extends JFrame implements Runnable{
         caminoSleccionado.clear();
         caminoSleccionado.add(bestChromosome.getCurrentStart());
         caminoSleccionado.addAll(bestChromosome.getGenes());
+        caminoSleccionado.add(bestChromosome.getFinalDepot());
         mostrar(caminoSleccionado);
 //	JOptionPane.showMessageDialog(tab,menor+" en el camino "+"\n"+cam.elementAt(camino),"Mejor Ruta",1);
     }
@@ -163,9 +169,9 @@ public class Agente_Viajero extends JFrame implements Runnable{
 	
     public static void main (String arg[]){
         Agente_Viajero frame = new Agente_Viajero();
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setUndecorated(!true);
-        frame.setSize(size.width,size.height);
+//        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+//        frame.setUndecorated(!true);
+//        frame.setSize(size.width,size.height);
         frame.setVisible(true);	
     }
 }

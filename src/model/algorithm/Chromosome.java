@@ -28,24 +28,31 @@ public class Chromosome {
     @Builder.Default
     private double fitness = Double.MAX_VALUE;
     private Vertex currentStart;
+    private Vertex finalDepot;
 
     private void computeFitness() {
         // cojer todos los genes y calcular sus distancias para obtener el fitness
-        fitness = 0;
         if(currentStart == null)
             throw new NullPointerException("currentStart es null");
         
+        if(finalDepot == null)
+            throw new NullPointerException("currentStart es null");
+        
+        int i = 0;
+        fitness = 0;
         fitness += currentStart.getDistancia(genes.get(0));
-        for(int i = 0; i < genes.size() - 1; i++){
+        for(; i < genes.size() - 1; i++){
             fitness += genes.get(i).getDistancia(genes.get(i + 1));
         }
+        fitness += finalDepot.getDistancia(genes.get(i));
     }
     
-    public void setGenes(Vertex current, List<Vertex> v){
+    public void setGenes(Vertex current, List<Vertex> v, Vertex finalD){
         currentStart = current;
         ArrayList<Vertex> vertexList = new ArrayList<>();
         vertexList.addAll(v);
         genes = vertexList;
+        finalDepot = finalD;
     }
     
     public Double getFitness(){
@@ -74,8 +81,8 @@ public class Chromosome {
         List<Vertex> lastC2 = new ArrayList<>(parent2.getGenes().subList(i, parent2.getGenes().size()));
         firstC1.addAll(lastC2);
         firstC2.addAll(lastC1);
-        Chromosome child1 = Chromosome.builder().currentStart(parent1.getCurrentStart()).genes(firstC1).build();
-        Chromosome child2 = Chromosome.builder().currentStart(parent2.getCurrentStart()).genes(firstC2).build();
+        Chromosome child1 = Chromosome.builder().currentStart(parent1.getCurrentStart()).genes(firstC1).finalDepot(parent1.getFinalDepot()).build();
+        Chromosome child2 = Chromosome.builder().currentStart(parent2.getCurrentStart()).genes(firstC2).finalDepot(parent2.getFinalDepot()).build();
         children = process_gen_repeted(child1, child2, parent1, parent2, i);
         return children;
     }
@@ -84,9 +91,9 @@ public class Chromosome {
                                                         Chromosome parent1, Chromosome parent2, int pos) {
         List<Chromosome> modifiedChildren = new ArrayList<>();
         Chromosome child1Aux = new Chromosome();
-        child1Aux.setGenes(child1.getCurrentStart(), child1.getGenes());
+        child1Aux.setGenes(child1.getCurrentStart(), child1.getGenes(), child1.getFinalDepot());
         Chromosome child2Aux = new Chromosome();
-        child2Aux.setGenes(child2.getCurrentStart() ,child2.getGenes());
+        child2Aux.setGenes(child2.getCurrentStart() ,child2.getGenes(), child2.getFinalDepot());
         int count1 = 0;
         List<Vertex> sublist1 = new ArrayList<>(child1.getGenes().subList(0, pos));
         List<Vertex> sublist2 = new ArrayList<>(child2.getGenes().subList(0, pos));
@@ -139,7 +146,7 @@ public class Chromosome {
     @Override
     public String toString() {
         StringBuilder chromosome = new StringBuilder();
-        chromosome.append("Chromosome: ").append(genes).append("\n");
+        chromosome.append("Chromosome: ").append(currentStart).append(genes).append(finalDepot).append("\n");
         chromosome.append("Fitness: ").append(fitness).append("\n");
         return chromosome.toString();
     }
